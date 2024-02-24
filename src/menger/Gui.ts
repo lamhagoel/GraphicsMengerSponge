@@ -1,7 +1,7 @@
 import { Camera } from "../lib/webglutils/Camera.js";
 import { CanvasAnimation } from "../lib/webglutils/CanvasAnimation.js";
 import { MengerSponge } from "./MengerSponge.js";
-import { Mat4, Vec3 } from "../lib/TSM.js";
+import { Mat4, Vec2, Vec3 } from "../lib/TSM.js";
 
 /**
  * Might be useful for designing any animation GUI
@@ -128,7 +128,25 @@ export class GUI implements IGUI {
   public drag(mouse: MouseEvent): void {
 	  
 	  // TODO: Your code here for left and right mouse drag
-	  
+	  // console.log(mouse);
+    if (this.dragging && mouse.buttons ==1 && (mouse.screenX != this.prevX || mouse.screenY != this.prevY)) {
+      // console.log("here");
+      // drag happened
+      // We need to calculate drag direction in world coordinates
+      // console.log(this.prevX, this.prevY, mouse.screenX, mouse.screenY);
+
+      // TODO: How to convert these to world coordinates?
+      let direction = new Vec3([mouse.screenX-this.prevX, mouse.screenY-this.prevY, 0.]);
+      // console.log(direction);
+      direction.normalize();
+      // console.log(direction);
+      // console.log(this.camera.forward());
+      
+      let rotationAxis =  Vec3.cross(direction, this.camera.forward());
+      this.camera.rotate(rotationAxis, -GUI.rotationSpeed);
+      this.prevX = mouse.screenX;
+      this.prevY = mouse.screenY;
+    }
   }
 
   /**
@@ -137,8 +155,11 @@ export class GUI implements IGUI {
    */
   public dragEnd(mouse: MouseEvent): void {
     this.dragging = false;
+    // console.log(this.prevX, this.prevY, mouse.screenX, mouse.screenY);
     this.prevX = 0;
     this.prevY = 0;
+
+    // this.sponge.setDirty();
   }
 
   /**
@@ -158,19 +179,19 @@ export class GUI implements IGUI {
 
     switch (key.code) {
       case "KeyW": {
-
+        this.camera.offset(this.camera.forward(), -GUI.zoomSpeed, true);
         break;
       }
       case "KeyA": {
-
+        this.camera.offset(this.camera.right(), -GUI.panSpeed, false);
         break;
       }
       case "KeyS": {
-
+        this.camera.offset(this.camera.forward(), GUI.zoomSpeed, true);
         break;
       }
       case "KeyD": {
-
+        this.camera.offset(this.camera.right(), GUI.panSpeed, false);
         break;
       }
       case "KeyR": {
@@ -178,35 +199,39 @@ export class GUI implements IGUI {
         break;
       }
       case "ArrowLeft": {
-
+        this.camera.roll(GUI.rollSpeed, false);
         break;
       }
       case "ArrowRight": {
-
+        this.camera.roll(GUI.rollSpeed, true);
         break;
       }
       case "ArrowUp": {
-
+        this.camera.offset(this.camera.up(), GUI.panSpeed, false);
         break;
       }
       case "ArrowDown": {
-
+        this.camera.offset(this.camera.up(), -GUI.panSpeed, false);
         break;
       }
       case "Digit1": {
-
+        this.sponge.setLevel(1);
+        console.log("1 pressed");
         break;
       }
       case "Digit2": {
-
+        this.sponge.setLevel(2);
+        console.log("2 pressed");
         break;
       }
       case "Digit3": {
-
+        this.sponge.setLevel(3);
+        console.log("3 pressed");
         break;
       }
       case "Digit4": {
-
+        this.sponge.setLevel(4);
+        console.log("4 pressed");
         break;
       }
       default: {

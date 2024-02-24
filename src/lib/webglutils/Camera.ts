@@ -310,6 +310,8 @@ export class Camera {
     // TODO: add preconditions and checks for small angles or axis
     console.assert(axis != null);
     console.assert(radians != null);
+
+    console.log("Rotating", axis, radians, pos);
     
     if(Number.isNaN(axis.length()) || axis.length() == 0.0)
         return;
