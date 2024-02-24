@@ -183,7 +183,7 @@ export class GUI implements IGUI {
         break;
       }
       case "KeyA": {
-        this.camera.offset(this.camera.right(), -GUI.panSpeed, false);
+        this.camera.offset(this.camera.right(), -GUI.panSpeed, true);
         break;
       }
       case "KeyS": {
@@ -191,7 +191,7 @@ export class GUI implements IGUI {
         break;
       }
       case "KeyD": {
-        this.camera.offset(this.camera.right(), GUI.panSpeed, false);
+        this.camera.offset(this.camera.right(), GUI.panSpeed, true);
         break;
       }
       case "KeyR": {
