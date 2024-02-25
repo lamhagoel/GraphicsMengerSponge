@@ -8,7 +8,6 @@ import { Mat3, Mat4, Vec3, Vec4 } from "../lib/TSM.js";
 // ------------------------------ better known as Bob Esponja ------------------------------------------------------------------------------------------
 // ------------------------------ better known as Bob Esponja ------------------------------------------------------------------------------------------
 // ------------------------------ better known as Bob Esponja ------------------------------------------------------------------------------------------
-/* A potential interface that students should implement */
 interface IFloor {
   setFloor(): void;
   isDirty(): boolean;
@@ -23,35 +22,29 @@ interface IFloor {
  */
 export class Floor implements IFloor {
 
-  private dirty: boolean; // TODO: See when to set/unset this
+  private dirty: boolean;
   private vertexPositions: Float32Array;
   private faceIndices: Uint32Array;
   private vertexNormals: Float32Array;
-  private minFloor = -10.0;
-  private maxFloor = 10.0;
+  private minFloor = Number.MIN_SAFE_INTEGER;
+  private maxFloor = Number.MAX_SAFE_INTEGER;
   private centerY = -2.0;
-  // private level: number;
-  // private printedBefore = false;
-  
+
   constructor() {
     this.setFloor();
-    
-    // console.log(this.faceIndices);
-    // console.log(this.vertexPositions);
-    // console.log(this.vertexNormals);
   }
 
   /**
-   * Returns true if the sponge has changed.
+   * Returns true if the floor has changed.
    */
   public isDirty(): boolean {
        return this.dirty;
   }
 
   public setClean(): void {
-    this.dirty = false; // TODO: See whether this is enough, or we need to do other stuff before unsetting dirty
+    this.dirty = false;
   }
-  
+
   public setFloor()
   {
     this.vertexPositions = new Float32Array(0);
@@ -91,103 +84,83 @@ export class Floor implements IFloor {
     return ret;    
   }
 
-  // private addCube(minCorner: Float32Array, maxCorner: Float32Array): void {
   private addFloor(): void {
     // We're dealing w homogeneous coordinates, so 4 coords per vertex.
 
+    // console.log("Adding floor", this.minFloor, this.maxFloor);
+
     // TODO: fix length
-    let tempVertices: Float32Array = new Float32Array(this.vertexPositions.length + 6*4);
-    let tempNormals: Float32Array = new Float32Array(this.vertexNormals.length + 6*4);
-    let tempFaces: Uint32Array = new Uint32Array(this.faceIndices.length + 6);
+    let tempVertices: Float32Array = new Float32Array(5*4);
+    let tempNormals: Float32Array = new Float32Array(5*4);
+    let tempFaces: Uint32Array = new Uint32Array(4*3);
 
-    let vert0 = new Float32Array([this.minFloor, this.centerY, this.minFloor, 1.0]);
-    let vert1 = new Float32Array([this.minFloor, this.centerY, this.maxFloor, 1.0]);
-    let vert2 = new Float32Array([this.maxFloor, this.centerY, this.minFloor, 1.0]);
-    let vert3 = new Float32Array([this.maxFloor, this.centerY, this.maxFloor, 1.0]);
-    let vert4 = new Float32Array([this.maxFloor, this.centerY, this.minFloor, 1.0]);
-    let vert5 = new Float32Array([this.minFloor, this.centerY, this.maxFloor, 1.0]);
+    let floorCenter = (this.minFloor + this.maxFloor)/2.0;
+    let vert0 = new Float32Array([floorCenter, this.centerY, floorCenter, 1.0]);
+    let vert1 = new Float32Array([this.maxFloor, this.centerY, this.minFloor, 1.0]);
+    let vert2 = new Float32Array([this.maxFloor, this.centerY, this.maxFloor, 1.0]);
+    let vert3 = new Float32Array([this.minFloor, this.centerY, this.maxFloor, 1.0]);
+    let vert4 = new Float32Array([this.minFloor, this.centerY, this.minFloor, 1.0]);
+    // let vert5 = new Float32Array([this.minFloor, this.centerY, this.maxFloor, 1.0]);
 
-    let vertLength = this.vertexPositions.length;
-    let normLength = this.vertexNormals.length;
-    let vertCount = vertLength/4;
-    let faceLength = this.faceIndices.length;
+    let vertLength = 0;
+    let normLength = 0;
+    let faceLength = 0;
 
-    let normVec1: Vec3;
-    let normVec2: Vec3;
-    let normal: Vec3;
-    let normalArr: Float32Array;
+    // let normVec1: Vec3;
+    // let normVec2: Vec3;
+    // let normal: Vec3;
+    // let normalArr: Float32Array;
 
-    tempVertices.set(this.vertexPositions);
-    tempNormals.set(this.vertexNormals);
-    tempFaces.set(this.faceIndices);
+    // tempVertices.set(this.vertexPositions);
+    // tempNormals.set(this.vertexNormals);
+    // tempFaces.set(this.faceIndices);
 
     // first triangle
     tempVertices.set(vert0, vertLength);
-    vertLength +=4;
+    vertLength+=4;
 
     tempVertices.set(vert1, vertLength);
-    vertLength +=4;
+    vertLength+=4;
 
     tempVertices.set(vert2, vertLength);
-    vertLength +=4;
+    vertLength+=4;
 
-    tempFaces[faceLength+2] = vertCount;
-    tempFaces[faceLength+1] = vertCount+1;
-    tempFaces[faceLength] = vertCount+2;
-    faceLength +=3;
-
-    vertCount+=3;
-    
-    normVec1 = new Vec3([vert1[0] - vert0[0], vert1[1] - vert0[1], vert1[2] - vert0[2]]);
-    normVec2 = new Vec3([vert2[0] - vert0[0], vert2[1] - vert0[1], vert2[2] - vert0[2]]);
-    normal = Vec3.cross(normVec1, normVec2);
-
-    normal.normalize();
-
-    normalArr = new Float32Array([normal.x, normal.y, normal.z, 0.0]);
-
-    for (let i=0; i<3; i++) {
-      tempNormals.set(normalArr, normLength);
-      normLength += 4;
-    }
-    
-    // second
     tempVertices.set(vert3, vertLength);
-    vertLength +=4;
-
+    vertLength+=4;
+    
     tempVertices.set(vert4, vertLength);
-    vertLength +=4;
+    vertLength+=4;
 
-    tempVertices.set(vert5, vertLength);
-    vertLength +=4;
-
-    tempFaces[faceLength+2] = vertCount;
-    tempFaces[faceLength+1] = vertCount+1;
-    tempFaces[faceLength] = vertCount+2;
+    tempFaces[faceLength] = 0;
+    tempFaces[faceLength+1] = 2;
+    tempFaces[faceLength+2] = 1;
     faceLength +=3;
 
-    vertCount+=3;
-    
-    normVec1 = new Vec3([vert4[0] - vert3[0], vert4[1] - vert3[1], vert4[2] - vert3[2]]);
-    normVec2 = new Vec3([vert5[0] - vert3[0], vert5[1] - vert3[1], vert5[2] - vert3[2]]);
-    normal = Vec3.cross(normVec1, normVec2);
+    tempFaces[faceLength] = 0;
+    tempFaces[faceLength+1] = 3;
+    tempFaces[faceLength+2] = 2;
+    faceLength +=3;
 
-    normal.normalize();
+    tempFaces[faceLength] = 0;
+    tempFaces[faceLength+1] = 4;
+    tempFaces[faceLength+2] = 3;
+    faceLength +=3;
 
-    normalArr = new Float32Array([normal.x, normal.y, normal.z, 0.0]);
+    tempFaces[faceLength] = 0;
+    tempFaces[faceLength+1] = 1;
+    tempFaces[faceLength+2] = 4;
+    faceLength +=3;
 
-    for (let i=0; i<3; i++) {
+   let normalArr = new Float32Array([0.0, 1.0, 0.0, 0.0]);
+
+    for (let i=0; i<5; i++) {
       tempNormals.set(normalArr, normLength);
       normLength += 4;
     }
-
 
     this.vertexPositions = tempVertices;
     this.vertexNormals = tempNormals;
     this.faceIndices = tempFaces;
-
-    // console.log(this.faceIndices.length);
-
   }
   
 }

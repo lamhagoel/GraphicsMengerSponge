@@ -5,6 +5,7 @@ import {
 import { GUI } from "./Gui.js";
 import { MengerSponge } from "./MengerSponge.js";
 import { Floor } from "./floor.js";
+// import { Floor } from "../lib/webglutils/Floor.js"
 import { mengerTests } from "./tests/MengerTests.js";
 import {
   defaultFSText,
@@ -23,7 +24,7 @@ export interface MengerAnimationTest {
 
 export class MengerAnimation extends CanvasAnimation {
   private gui: GUI;
-  
+
   /* The Menger sponge better known as Bob Esponja*/
   private sponge: MengerSponge = new MengerSponge(1);
 
@@ -52,7 +53,7 @@ export class MengerAnimation extends CanvasAnimation {
 
   // ------------------------------ new ------------------------------------------------------------------------------------------
   // TODO: data structures for the floor
-  
+
   /* The Floor */
   private floor: Floor = new Floor();
 
@@ -103,12 +104,11 @@ export class MengerAnimation extends CanvasAnimation {
    * Initialize the Menger sponge data structure
    */
   public initMenger(): void {
-    
+
     this.sponge.setLevel(1);
-    
+
     /* Alias context for syntactic convenience */
     const gl: WebGLRenderingContext = this.ctx;
-
 
     /* Compile Shaders */
     this.mengerProgram = WebGLUtilities.createProgram(
@@ -218,10 +218,10 @@ export class MengerAnimation extends CanvasAnimation {
    * Sets up the floor and floor drawing
    */
   public initFloor(): void {
-      
+
     // TODO: your code to set up the floor rendering
-    this.floor.setFloor();
-    
+    // this.floor.setFloor();
+
     /* Alias context for syntactic convenience */
     const gl: WebGLRenderingContext = this.ctx;
 
@@ -237,6 +237,7 @@ export class MengerAnimation extends CanvasAnimation {
     this.floorVAO = this.extVAO.createVertexArrayOES() as WebGLVertexArrayObjectOES;
     this.extVAO.bindVertexArrayOES(this.floorVAO);
 
+    // console.log(this.floor.positionsFlat().length, this.floor.normalsFlat().length, this.floor.indicesFlat().length);
     /* Create and setup positions buffer*/
     // Returns a number that indicates where 'vertPosition' is in the shader program
     this.floorPosAttribLoc = gl.getAttribLocation(
@@ -407,7 +408,7 @@ export class MengerAnimation extends CanvasAnimation {
       false,
       new Float32Array(this.gui.projMatrix().all())
     );
-	
+
 	console.log("Drawing ", this.sponge.indicesFlat().length, " triangles");
 
 
@@ -418,16 +419,18 @@ export class MengerAnimation extends CanvasAnimation {
       gl.UNSIGNED_INT,
       0
     );
-    
+
     // ------------------------------ new ------------------------------------------------------------------------------------------
-    /* Menger - Update/Draw */
+    /* Floor - Update/Draw */
     const floorMatrix = this.floor.uMatrix();
     gl.useProgram(this.floorProgram);
+    this.extVAO.bindVertexArrayOES(this.floorVAO);
+
     /* Update floor uniforms */
     gl.uniformMatrix4fv(
       this.floorWorldUniformLocation,
       false,
-      new Float32Array(modelMatrix.all())
+      new Float32Array(floorMatrix.all())
     );
     gl.uniformMatrix4fv(
       this.floorViewUniformLocation,
@@ -448,7 +451,7 @@ export class MengerAnimation extends CanvasAnimation {
       0
     );
     // ------------------------------ end new ------------------------------------------------------------------------------------------
-    
+
   }
 
   public setLevel(level: number): void {

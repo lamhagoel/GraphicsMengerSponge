@@ -49,27 +49,51 @@ export let floorVSText = `
     attribute vec3 vertPosition;
     attribute vec3 vertColor;
     attribute vec4 aNorm;
-    
+
     varying vec4 lightDir;
     varying vec4 normal;   
- 
+
     uniform vec4 lightPosition;
     uniform mat4 mWorld;
     uniform mat4 mView;
-	uniform mat4 mProj;
+    uniform mat4 mProj;
 
     void main () {
-		//  Convert vertex to camera coordinates and the NDC
+        //  Convert vertex to camera coordinates and the NDC
         gl_Position = mProj * mView * mWorld * vec4 (vertPosition, 1.0);
         
         //  Compute light direction (world coordinates)
         lightDir = lightPosition - vec4(vertPosition, 1.0);
-		
+        
         //  Pass along the vertex normal (world coordinates)
         normal = aNorm;
     }
 `;
+
 export let floorFSText = `
+    precision mediump float;
+
+    varying vec4 lightDir;
+    varying vec4 normal;    
+	
     
+    void main () {
+        // float diffuse = dot(normalize(lightDir.xyz), normalize(normal.xyz));
+        // gl_FragColor = vec4(abs(normal).xyz*max(diffuse, 0.0), 1.0);
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
 `;
+
+
+// precision mediump float;
+
+// varying vec4 lightDir;
+// varying vec4 normal;    
+
+
+// void main () {
+//     // float diffuse = dot(normalize(lightDir.xyz), normalize(normal.xyz));
+//     // gl_FragColor = vec4(abs(normal).xyz*max(diffuse, 0.0), 1.0);
+//     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+// }
 
