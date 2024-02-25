@@ -105,17 +105,7 @@ export class Floor implements IFloor {
     let vertLength = 0;
     let normLength = 0;
     let faceLength = 0;
-
-    // let normVec1: Vec3;
-    // let normVec2: Vec3;
-    // let normal: Vec3;
-    // let normalArr: Float32Array;
-
-    // tempVertices.set(this.vertexPositions);
-    // tempNormals.set(this.vertexNormals);
-    // tempFaces.set(this.faceIndices);
-
-    // first triangle
+    
     tempVertices.set(vert0, vertLength);
     vertLength+=4;
 
