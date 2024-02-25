@@ -34,11 +34,6 @@ export class Floor implements IFloor {
   // private printedBefore = false;
   
   constructor() {
-    // this.vertexPositions = new Float32Array([1.0, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0]);
-    // this.faceIndices = new Uint32Array([0, 1, 2]);
-    // this.vertexNormals = new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]);
-    
-    // this.level = -1;
     this.setFloor();
     
     // console.log(this.faceIndices);
@@ -62,13 +57,8 @@ export class Floor implements IFloor {
     this.vertexPositions = new Float32Array(0);
     this.faceIndices = new Uint32Array(0);
     this.vertexNormals = new Float32Array(0);
-    // It's a cube, so we don't need full min and max vertices, only one of the two vertices and the length should suffice.
-    // this.createSponge(new Float32Array([-0.5,-0.5,-0.5]), new Float32Array([0.5,0.5,0.5]), level);
-    // this.createSponge(new Float32Array([-0.5,-0.5,-0.5]), 1, level);
     this.addFloor();
-    this.dirty = true; // TODO: Add other stuff here, but need to mark dirty for sure.
-    // console.log(this.faceIndices.length);
-    // console.log(this.vertexPositions);
+    this.dirty = true;
   }
 
   /* Returns a flat Float32Array of the sponge's vertex positions */
@@ -101,46 +91,9 @@ export class Floor implements IFloor {
     return ret;    
   }
 
-  // private createSponge(minCorner: Float32Array, cubeLength: number, level: number): void {
-  //   if (level == 1) {
-  //     // console.log(minCorner, maxCorner);
-  //     // if (maxCorner[0]==0.5) {
-  //       // console.trace();
-  //     // }
-  //     // console.log(maxCorner);
-  //     this.addCube(minCorner, new Float32Array([minCorner[0]+cubeLength, minCorner[1]+cubeLength, minCorner[2]+cubeLength]));
-  //   }
-  //   else {
-  //     let smallCubeLength = cubeLength/3.0;
-  //     for (let i = 0; i < 3; i++) {
-  //       for (let j = 0; j < 3; j++) {
-  //         for (let k = 0; k < 3; k++) {
-  //           // Skip the middle cubes
-  //           if ((i===1 && j===1) || (j===1 && k===1) || (k===1 && i===1)) {
-  //             continue;
-  //           }
-  //           let newMin = new Float32Array([(minCorner[0] + smallCubeLength*i), (minCorner[1] + smallCubeLength*j), (minCorner[2] + smallCubeLength*k)]);
-  //           // let newMax = new Float32Array([(maxCorner[0] - smallCubeLength[0]*(2-i)), (maxCorner[1] - smallCubeLength[1]*(2-j)), (maxCorner[2] - smallCubeLength[2]*(2-k))]);
-  //           // let newMax = new Float32Array([newMin[0]+smallCubeLength[0], newMin[1]+smallCubeLength[1], newMin[2]+smallCubeLength[2]]);
-  //           this.createSponge(newMin, smallCubeLength, level-1);
-
-  //           // if (level == 2 && !this.printedBefore) {
-  //           //   console.log (newMin, newMax);
-  //           // }
-  //         }
-  //       }
-  //     }
-  //     // if (level == 2) {
-  //     //   this.printedBefore = true;
-  //     // }
-  //   }
-  // }
-
   // private addCube(minCorner: Float32Array, maxCorner: Float32Array): void {
   private addFloor(): void {
     // We're dealing w homogeneous coordinates, so 4 coords per vertex.
-    // Worked out faces and vertices on the ipad - add those here to corresponding arrays, also need to add normals
-    // See how to add to TypedArrays
 
     // TODO: fix length
     let tempVertices: Float32Array = new Float32Array(this.vertexPositions.length + 6*4);
@@ -179,8 +132,8 @@ export class Floor implements IFloor {
     vertLength +=4;
 
     tempFaces[faceLength+2] = vertCount;
-    tempFaces[faceLength+1] = vertCount+2;
-    tempFaces[faceLength] = vertCount+3;
+    tempFaces[faceLength+1] = vertCount+1;
+    tempFaces[faceLength] = vertCount+2;
     faceLength +=3;
 
     vertCount+=3;
@@ -193,7 +146,7 @@ export class Floor implements IFloor {
 
     normalArr = new Float32Array([normal.x, normal.y, normal.z, 0.0]);
 
-    for (let i=0; i<4; i++) {
+    for (let i=0; i<3; i++) {
       tempNormals.set(normalArr, normLength);
       normLength += 4;
     }
@@ -209,8 +162,8 @@ export class Floor implements IFloor {
     vertLength +=4;
 
     tempFaces[faceLength+2] = vertCount;
-    tempFaces[faceLength+1] = vertCount+2;
-    tempFaces[faceLength] = vertCount+3;
+    tempFaces[faceLength+1] = vertCount+1;
+    tempFaces[faceLength] = vertCount+2;
     faceLength +=3;
 
     vertCount+=3;
