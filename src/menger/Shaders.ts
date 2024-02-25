@@ -82,13 +82,6 @@ export let floorFSText = `
     varying vec4 lightDir;
     varying vec4 normal;  
     varying vec4 position;  
-	
-    
-    // void main () {
-    //     // float diffuse = dot(normalize(lightDir.xyz), normalize(normal.xyz));
-    //     // gl_FragColor = vec4(abs(normal).xyz*max(diffuse, 0.0), 1.0);
-    //     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    // }
 
     void main() {
         // Define checkerboard pattern size
@@ -101,11 +94,11 @@ export let floorFSText = `
         
         if (checkerPattern < 1.0) {
             float diffuse = dot(normalize(lightDir.xyz), normalize(normal.xyz));
-            gl_FragColor = vec4(vec4(1.0, 1.0, 1.0, 1.0).xyz*max(diffuse, 0.0), 1.0);
+            gl_FragColor = vec4(vec4(0.0, 0.0, 0.0, 1.0).xyz*max(diffuse, 0.0), 1.0);
             // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // White square
         } else {
             float diffuse = dot(normalize(lightDir.xyz), normalize(normal.xyz));
-            gl_FragColor = vec4(vec4(0.0, 0.0, 0.0, 1.0).xyz*max(diffuse, 0.0), 1.0);
+            gl_FragColor = vec4(vec4(1.0, 1.0, 1.0, 1.0).xyz*max(diffuse, 0.0), 1.0);
             // gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black square
         }
     }
