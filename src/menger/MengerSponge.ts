@@ -15,7 +15,7 @@ interface IMengerSponge {
  */
 export class MengerSponge implements IMengerSponge {
 
-  private dirty: boolean; // TOOD: See when to set/unset this
+  private dirty: boolean; // TODO: See when to set/unset this
   private vertexPositions: Float32Array;
   private faceIndices: Uint32Array;
   private vertexNormals: Float32Array;
